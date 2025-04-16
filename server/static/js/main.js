@@ -3,58 +3,58 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import ThreeGlobe from 'three-globe';
 
-// Глобальные переменные для хранения состояния
+// Global variables for storing state
 let points = [];
-const MAX_POINTS = 1000; // Ограничение на количество точек для предотвращения проблем с WebGL
+const MAX_POINTS = 1000; // Limit on the number of points to prevent WebGL issues
 const POINT_LIFETIME = 30000;
 let globe, renderer, scene, camera, controls;
 
-// Инициализация сцены
+// Scene initialization
 function initScene() {
-  // Создание сцены
+  // Create scene
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
   camera.position.z = 250;
 
-  // Контейнер для глобуса
+  // Container for the globe
   const container = document.createElement('div');
   container.style.position = 'absolute';
   container.style.width = '100%';
   container.style.height = '100%';
   document.body.appendChild(container);
 
-  // Создание рендерера
+  // Create renderer
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
   } catch (e) {
-    console.error("Ошибка инициализации WebGL:", e);
+    console.error("WebGL initialization error:", e);
     const errorMsg = document.createElement('div');
     errorMsg.style.color = 'red';
     errorMsg.style.position = 'absolute';
     errorMsg.style.top = '50%';
     errorMsg.style.width = '100%';
     errorMsg.style.textAlign = 'center';
-    errorMsg.innerHTML = '<h1>Ошибка WebGL</h1><p>Ваш браузер не поддерживает WebGL или произошла ошибка инициализации.</p>';
+    errorMsg.innerHTML = '<h1>WebGL Error</h1><p>Your browser does not support WebGL or an initialization error occurred.</p>';
     container.appendChild(errorMsg);
     return false;
   }
 
-  // Добавление освещения
+  // Add lighting
   scene.add(new THREE.AmbientLight(0xbbbbbb));
   const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
   directionalLight.position.set(0, 0, 1);
   scene.add(directionalLight);
 
-  // Настройка OrbitControls
+  // Setup OrbitControls
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
 
-  // Добавление обработчика изменения размера окна
+  // Add window resize handler
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -64,7 +64,7 @@ function initScene() {
   return true;
 }
 
-// Инициализация глобуса
+// Globe initialization
 function initGlobe() {
   globe = new ThreeGlobe()
     .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
@@ -77,13 +77,13 @@ function initGlobe() {
 
   scene.add(globe);
 
-  // Создаём панель управления и информации
+  // Create control panel and information
   createUI();
 }
 
-// Создание пользовательского интерфейса
+// Create user interface
 function createUI() {
-  // Создаем контейнер для UI элементов
+  // Create container for UI elements
   const ui = document.createElement('div');
   ui.style.position = 'absolute';
   ui.style.top = '10px';
@@ -97,14 +97,14 @@ function createUI() {
   ui.style.borderRadius = '5px';
   ui.style.zIndex = '1000';
 
-  // Обработчики событий для UI элементов
+  // Event handlers for UI elements
   document.getElementById('rotateToggle').addEventListener('change', (e) => {
     controls.autoRotate = e.target.checked;
   });
 
   document.getElementById('pointLifetime').addEventListener('input', (e) => {
     const newLifetime = parseInt(e.target.value) * 1000;
-    document.getElementById('lifetimeValue').innerText = `${e.target.value} сек`;
+    document.getElementById('lifetimeValue').innerText = `${e.target.value} sec`;
   });
 
   document.getElementById('maxPoints').addEventListener('input', (e) => {
@@ -113,13 +113,13 @@ function createUI() {
   });
 }
 
-// Обновление точек на глобусе
+// Update points on the globe
 function updatePoints(newData) {
   const timestamp = Date.now();
   const maxPoints = parseInt(document.getElementById('maxPoints')?.value || MAX_POINTS);
   const lifetime = parseInt(document.getElementById('pointLifetime')?.value * 1000 || POINT_LIFETIME);
 
-  // Преобразование данных с сервера в формат, понятный для глобуса
+  // Convert data from server to format understandable by the globe
   const taggedData = newData.map(d => ({
     lat: d.latitude,
     lng: d.longitude,
@@ -128,20 +128,20 @@ function updatePoints(newData) {
     timestamp
   }));
 
-  // Добавляем новые точки и удаляем старые
+  // Add new points and remove old ones
   points = [...points, ...taggedData]
     .filter(p => (timestamp - p.timestamp) <= lifetime)
-    .slice(-maxPoints); // Ограничиваем количество точек
+    .slice(-maxPoints); // Limit the number of points
 
-  // Обновляем глобус
+  // Update globe
   globe.pointsData(points);
 
-  // Обновляем статистику
+  // Update statistics
   updateStats();
   updateLocationsList();
 }
 
-// Обновление статистики
+// Update statistics
 function updateStats() {
   if (!document.getElementById('totalPoints')) return;
 
@@ -154,14 +154,14 @@ function updateStats() {
   document.getElementById('suspiciousPoints').innerText = suspicious;
 }
 
-// Обновление списка активных локаций
+// Update list of active locations
 function updateLocationsList() {
   if (!document.getElementById('locationsList')) return;
 
-  // Группируем точки по локациям (округленным координатам)
+  // Group points by locations (rounded coordinates)
   const locations = {};
   points.forEach(p => {
-    // Округляем координаты для группировки близких точек
+    // Round coordinates to group nearby points
     const key = `${p.lat.toFixed(1)},${p.lng.toFixed(1)}`;
 
     if (!locations[key]) {
@@ -177,28 +177,28 @@ function updateLocationsList() {
     if (p.suspicious) locations[key].suspicious++;
   });
 
-  // Сортируем локации по количеству точек
+  // Sort locations by number of points
   const sortedLocations = Object.values(locations)
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  // Обновляем список
+  // Update list
   const list = document.getElementById('locationsList');
   if (sortedLocations.length === 0) {
-    list.innerHTML = '<li>Нет активных локаций</li>';
+    list.innerHTML = '<li>No active locations</li>';
     return;
   }
 
   list.innerHTML = sortedLocations.map(loc => {
     const suspiciousClass = loc.suspicious > 0 ? 'style="color:red"' : '';
     return `<li style="margin-bottom:5px;cursor:pointer" onclick="focusLocation(${loc.lat}, ${loc.lng})">
-      ${loc.lat.toFixed(2)}, ${loc.lng.toFixed(2)} - 
+      ${loc.lat.toFixed(2)}, ${loc.lng.toFixed(2)} -
       <span ${suspiciousClass}>${loc.count} points${loc.suspicious > 0 ? ` (${loc.suspicious} suspicious.)` : ''}</span>
     </li>`;
   }).join('');
 }
 
-// Функция для фокусировки камеры на локации
+// Function to focus camera on a location
 window.focusLocation = function(lat, lng) {
   const distanceFromCenter = 1.5;
   const phi = (90 - lat) * Math.PI / 180;
@@ -208,8 +208,8 @@ window.focusLocation = function(lat, lng) {
   const y = distanceFromCenter * Math.cos(phi);
   const z = distanceFromCenter * Math.sin(phi) * Math.sin(theta);
 
-  // Плавная анимация камеры к выбранной точке
-  const duration = 1000; // мс
+  // Smooth camera animation to selected point
+  const duration = 1000; // ms
   const start = Date.now();
   const startPos = camera.position.clone();
   const endPos = new THREE.Vector3(x, y, z).multiplyScalar(200);
@@ -218,7 +218,7 @@ window.focusLocation = function(lat, lng) {
     const now = Date.now();
     const progress = Math.min(1, (now - start) / duration);
 
-    // Плавное перемещение
+    // Smooth movement
     camera.position.lerpVectors(startPos, endPos, progress);
     camera.lookAt(0, 0, 0);
 
@@ -230,7 +230,7 @@ window.focusLocation = function(lat, lng) {
   animateCamera();
 };
 
-// Получение данных с сервера
+// Get data from server
 async function fetchData() {
   try {
     const response = await fetch('/data');
@@ -240,28 +240,28 @@ async function fetchData() {
       updatePoints(data);
     }
   } catch (error) {
-    console.error('Ошибка при получении данных:', error);
+    console.error('Error fetching data:', error);
   }
 }
 
-// Функция анимации
+// Animation function
 function animate() {
   requestAnimationFrame(animate);
   if (controls) controls.update();
   if (renderer && scene && camera) renderer.render(scene, camera);
 }
 
-// Инициализация приложения
+// Application initialization
 function init() {
   if (initScene()) {
     initGlobe();
     animate();
 
-    // Начинаем опрос сервера
+    // Start polling the server
     fetchData();
     setInterval(fetchData, 2000);
   }
 }
 
-// Запускаем приложение после загрузки страницы
+// Launch application after page loads
 document.addEventListener('DOMContentLoaded', init);

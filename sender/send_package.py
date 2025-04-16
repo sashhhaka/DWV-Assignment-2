@@ -10,31 +10,31 @@ def read_csv_and_send(file_path, server_url):
         headers = ['ip_address', 'latitude', 'longitude', 'timestamp', 'suspicious']
         data = []
 
-        # Пропускаем заголовок, если он есть
+        # Skip header if it exists
         next(reader, None)
 
         for row in reader:
             data.append(dict(zip(headers, row)))
 
-    # Сортировка по временной метке
+    # Sort by timestamp
     data.sort(key=lambda x: int(x['timestamp']))
 
-    # Получение начального времени
+    # Get start time
     start_time = int(data[0]['timestamp'])
     real_start_time = time.time()
 
     for packet in data:
-        # Расчет времени ожидания до отправки следующего пакета
+        # Calculate wait time before sending the next packet
         packet_time = int(packet['timestamp'])
         elapsed_sim_time = packet_time - start_time
         elapsed_real_time = time.time() - real_start_time
 
-        # Ожидание нужного момента для отправки (ускоряем в 10 раз для демонстрации)
+        # Wait for the right moment to send (speed up 10x for demonstration)
         wait_time = (elapsed_sim_time - elapsed_real_time) / 10
         if wait_time > 0:
             time.sleep(wait_time)
 
-        # Подготовка данных для отправки
+        # Prepare data for sending
         payload = {
             'ip': packet['ip_address'],
             'latitude': float(packet['latitude']),
@@ -43,12 +43,12 @@ def read_csv_and_send(file_path, server_url):
             'suspicious': float(packet['suspicious']) > 0
         }
 
-        # Отправка данных на сервер
+        # Send data to server
         try:
             response = requests.post(f"{server_url}/api/packets", json=payload)
-            print(f"Отправлен пакет: {payload['ip']}, статус: {response.status_code}")
+            print(f"Packet sent: {payload['ip']}, status: {response.status_code}")
         except Exception as e:
-            print(f"Ошибка при отправке пакета: {e}")
+            print(f"Error sending packet: {e}")
 
 
 if __name__ == "__main__":
