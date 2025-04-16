@@ -52,4 +52,4 @@ def read_csv_and_send(file_path, server_url):
 
 
 if __name__ == "__main__":
-    read_csv_and_send('sender/ip_addresses.csv', 'http://localhost:5000')
+    read_csv_and_send('ip_addresses.csv', 'http://server:5000')

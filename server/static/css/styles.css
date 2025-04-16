@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: block;
+}
+
+.hover-info {
+  position: absolute;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  pointer-events: none;
+  display: none;
+}
+
+.ui-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  background-color: rgba(0,0,0,0.7);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.ui-panel h2, .ui-panel h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.ui-panel input[type="range"] {
+  width: 100%;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#locationsList {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-left: 20px;
+  list-style-type: none;
+}

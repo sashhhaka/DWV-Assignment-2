@@ -6,14 +6,14 @@ import ThreeGlobe from 'three-globe';
 // Глобальные переменные для хранения состояния
 let points = [];
 const MAX_POINTS = 1000; // Ограничение на количество точек для предотвращения проблем с WebGL
-const POINT_LIFETIME = 30000; // Время жизни точки (30 секунд)
+const POINT_LIFETIME = 30000;
 let globe, renderer, scene, camera, controls;
 
 // Инициализация сцены
 function initScene() {
   // Создание сцены
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 10000);
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
   camera.position.z = 250;
 
   // Контейнер для глобуса
@@ -77,12 +77,6 @@ function initGlobe() {
 
   scene.add(globe);
 
-  // Добавление фона
-  // const loader = new THREE.TextureLoader();
-  // loader.load('//unpkg.com/three-globe/example/img/night-sky.png', texture => {
-  //   scene.background = texture;
-  // });
-
   // Создаём панель управления и информации
   createUI();
 }
@@ -103,50 +97,6 @@ function createUI() {
   ui.style.borderRadius = '5px';
   ui.style.zIndex = '1000';
 
-  // Добавляем заголовок
-  ui.innerHTML = `
-    <h2 style="margin-top:0;text-align:center">Настройки визуализации</h2>
-    
-    <div>
-      <label for="rotateToggle">Автоматическое вращение:</label>
-      <input type="checkbox" id="rotateToggle" checked>
-    </div>
-    
-    <div style="margin-top:10px">
-      <label for="pointLifetime">Время жизни точки (сек):</label>
-      <input type="range" id="pointLifetime" min="5" max="60" value="${POINT_LIFETIME/1000}" style="width:100%">
-      <div id="lifetimeValue">${POINT_LIFETIME/1000} сек</div>
-    </div>
-    
-    <div style="margin-top:10px">
-      <label for="maxPoints">Макс. кол-во точек:</label>
-      <input type="range" id="maxPoints" min="100" max="2000" value="${MAX_POINTS}" style="width:100%">
-      <div id="maxPointsValue">${MAX_POINTS} точек</div>
-    </div>
-    
-    <h3>Статистика</h3>
-    <div id="stats" style="display:flex;justify-content:space-between">
-      <div>
-        <div>Всего точек:</div>
-        <div id="totalPoints">0</div>
-      </div>
-      <div>
-        <div>Обычные:</div>
-        <div id="normalPoints">0</div>
-      </div>
-      <div>
-        <div>Подозрительные:</div>
-        <div id="suspiciousPoints">0</div>
-      </div>
-    </div>
-    
-    <h3>Активные локации</h3>
-    <ul id="locationsList" style="max-height:200px;overflow-y:auto;padding-left:20px;list-style-type:none">
-      <li>Загрузка данных...</li>
-    </ul>
-  `;
-  document.body.appendChild(ui);
-
   // Обработчики событий для UI элементов
   document.getElementById('rotateToggle').addEventListener('change', (e) => {
     controls.autoRotate = e.target.checked;
@@ -159,7 +109,7 @@ function createUI() {
 
   document.getElementById('maxPoints').addEventListener('input', (e) => {
     const newMaxPoints = parseInt(e.target.value);
-    document.getElementById('maxPointsValue').innerText = `${newMaxPoints} точек`;
+    document.getElementById('maxPointsValue').innerText = `${newMaxPoints} points`;
   });
 }
 
@@ -171,8 +121,8 @@ function updatePoints(newData) {
 
   // Преобразование данных с сервера в формат, понятный для глобуса
   const taggedData = newData.map(d => ({
-    lat: d.latitude,  // Используем правильные имена полей
-    lng: d.longitude, // Используем правильные имена полей
+    lat: d.latitude,
+    lng: d.longitude,
     ip: d.ip,
     suspicious: d.suspicious || false,
     timestamp
@@ -243,7 +193,7 @@ function updateLocationsList() {
     const suspiciousClass = loc.suspicious > 0 ? 'style="color:red"' : '';
     return `<li style="margin-bottom:5px;cursor:pointer" onclick="focusLocation(${loc.lat}, ${loc.lng})">
       ${loc.lat.toFixed(2)}, ${loc.lng.toFixed(2)} - 
-      <span ${suspiciousClass}>${loc.count} точек${loc.suspicious > 0 ? ` (${loc.suspicious} подозр.)` : ''}</span>
+      <span ${suspiciousClass}>${loc.count} points${loc.suspicious > 0 ? ` (${loc.suspicious} suspicious.)` : ''}</span>
     </li>`;
   }).join('');
 }
