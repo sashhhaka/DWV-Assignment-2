@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visualization of  IP-traffic</title>
+  <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+  <div id="hover-info" class="hover-info"></div>
+
+  <div id="ui-panel" class="ui-panel">
+    <h2>GeoIP Tracker</h2>
+    <h3>Visualization settings</h3>
+
+    <div>
+      <label for="rotateToggle">Auto rotation:</label>
+      <input type="checkbox" id="rotateToggle" checked>
+    </div>
+
+    <div style="margin-top:10px">
+      <label for="pointLifetime">Point lifetime (sec):</label>
+      <input type="range" id="pointLifetime" min="5" max="60" value="30">
+      <div id="lifetimeValue">30 sec</div>
+    </div>
+
+    <div style="margin-top:10px">
+      <label for="maxPoints">Max number of points:</label>
+      <input type="range" id="maxPoints" min="10" max="2000" value="1000">
+      <div id="maxPointsValue">1000 points</div>
+    </div>
+
+    <h3>Statistics</h3>
+    <div id="stats" class="stats-container">
+      <div>
+        <div>Total points:</div>
+        <div id="totalPoints">0</div>
+      </div>
+      <div>
+        <div>Normal:</div>
+        <div id="normalPoints">0</div>
+      </div>
+      <div>
+        <div>Suspicious:</div>
+        <div id="suspiciousPoints">0</div>
+      </div>
+    </div>
+
+    <h3>Active locations</h3>
+    <ul id="locationsList">
+      <li>Loading data...</li>
+    </ul>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://esm.sh/three@0.176.0",
+        "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.176.0/examples/jsm/controls/OrbitControls.js",
+        "three-globe": "https://esm.sh/three-globe@2.30.0"
+      }
+    }
+  </script>
+  <script type="module" src="../static/js/main.js"></script>
+</body>
+</html>
